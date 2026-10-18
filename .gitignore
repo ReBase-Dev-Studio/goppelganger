@@ -1,0 +1,16 @@
+# Test & coverage artifacts
+*.test
+*.out
+coverage.*
+
+# Go workspace
+go.work
+go.work.sum
+
+# OS / editor
+.DS_Store
+.idea/
+.vscode/
+
+# Local agent instructions (never committed)
+CLAUDE.md
