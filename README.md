@@ -1,5 +1,9 @@
 # goppelganger
 
+[![Go Reference](https://pkg.go.dev/badge/github.com/ReBase-Dev-Studio/goppelganger.svg)](https://pkg.go.dev/github.com/ReBase-Dev-Studio/goppelganger)
+[![Go Version](https://img.shields.io/badge/go-1.22%2B-00ADD8?logo=go)](go.mod)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+
 Schema-First Faker for Go. Feed it a JSON Schema, get back random data that satisfies the contract — no structs, no reflection, no third-party faking libraries.
 
 > **Status:** MVP. Stdlib only, Go 1.22+, safe for concurrent use, deterministic with a seed.
@@ -59,6 +63,7 @@ With seed `42`, the first `faker.Generate(schema)` call returns (as JSON):
 
 - `Generate` requires an object root (directly or via `$ref`), else `ErrRootMustBeObject`; a nullable root may return a `nil` map.
 - A `Faker` is safe for concurrent use: each call holds its lock for the whole generation, so a seeded `Faker` yields the same sequence of results for the same sequence of calls.
+- `Options.Seed` is a `*int64`: `nil` draws a random seed from `crypto/rand`; any non-nil value (including `0`) is used literally. `Options.Locale` defaults to `DefaultLocale` (`en_US`) when empty.
 - `New` never fails: an unsupported locale is returned as `ErrUnsupportedLocale` by every call.
 - The package-level `Generate`/`GenerateValue`/`GenerateSchema`/`GenerateSchemaValue` share one randomly seeded `Faker`.
 - `Compile` returns an immutable `*Schema`, safe to share across goroutines and Fakers. `Generate(b)` is exactly `Compile(b)` + `GenerateSchema`, so both give the same output for the same seed. `Compile` accepts any root; `GenerateSchema` reports `ErrRootMustBeObject`. A compiled schema is several times faster per call (`go test -bench Generate -benchmem`).
@@ -146,22 +151,36 @@ Malformed JSON returns the wrapped `encoding/json` error.
 go build ./...
 go vet ./...
 go test ./... -race
+go test . -run '^$' -bench Generate -benchmem   # Generate vs precompiled GenerateSchema
 ```
 
 Seeded output (the sample above and the `// Output:` blocks in `example_test.go`) is pinned per library version: when generation changes, run `go test . -run '^Example'` and paste the new `got:` values.
-
-Pull requests follow [`.github/pull_request_template.md`](.github/pull_request_template.md): conventional-commit type, stdlib-only/determinism checklist, and seeded-output changes flagged as breaking.
 
 ## Layout
 
 | Path | Responsibility |
 |------|----------------|
-| `/` | Public API (`goppelganger.go`, `options.go`) |
+| `/` | Public API (`goppelganger.go`, `options.go`, `schema.go`); testable examples in `example_test.go` |
 | `/parser` | JSON Schema → typed AST |
 | `/internal/numeric` | Range math shared by parser and generator |
 | `/generator` | AST walker and value generators |
 | `/examples/mockserver` | Runnable stub HTTP API built on the library |
+| `/.github` | Pull request template |
+
+## Contributing
+
+Issues and pull requests are welcome. Before opening a PR:
+
+- **Stdlib only:** no external dependencies.
+- **Determinism:** never iterate Go maps to produce output, never call `time.Now`, never use the global `math/rand`; all randomness flows through the per-instance `*rand.Rand`.
+- **Fail fast:** contradictory constraints are rejected by the parser, not the generator. New errors are sentinels wrapped with `%w` and re-exported from the root package.
+- **Tests:** add or update tests for the changed behavior; `go build ./...`, `go vet ./...` and `go test ./... -race` must pass.
+- **Seeded output:** a change to generated values for a given seed is a breaking change. Mark it as such and regenerate the README sample and the `example_test.go` `// Output:` blocks (see [Development](#development)).
+- **Docs:** this README is the user contract; update it when supported keywords, generation rules, errors or limitations change.
+- **Commits:** use [Conventional Commits](https://www.conventionalcommits.org/) (`feat:`, `fix:`, `docs:`, `refactor:`, …).
+
+The [pull request template](.github/pull_request_template.md) walks through this checklist.
 
 ## License
 
-TBD
+[MIT](LICENSE) © 2026 Re:Base Studio
