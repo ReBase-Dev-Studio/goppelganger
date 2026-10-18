@@ -64,6 +64,16 @@ With seed `42`, the first `faker.Generate(schema)` call returns (as JSON):
 - `Compile` returns an immutable `*Schema`, safe to share across goroutines and Fakers. `Generate(b)` is exactly `Compile(b)` + `GenerateSchema`, so both give the same output for the same seed. `Compile` accepts any root; `GenerateSchema` reports `ErrRootMustBeObject`. A compiled schema is several times faster per call (`go test -bench Generate -benchmem`).
 - Results are plain Go values ready for `encoding/json`: `map[string]any`, `[]any`, `string`, `int64` (`integer`), `float64` (`number`), `bool`, `nil`.
 
+Runnable examples (recursive `$ref`, `Compile` reuse, error matching) live in [`example_test.go`](example_test.go) and on [pkg.go.dev](https://pkg.go.dev/github.com/ReBase-Dev-Studio/goppelganger#pkg-examples); `go test` verifies their seeded output.
+
+[`examples/mockserver`](examples/mockserver/main.go) is a stub REST API that serves users generated from an embedded schema ([`schemas/user.json`](examples/mockserver/schemas/user.json)):
+
+```sh
+go run ./examples/mockserver -seed 42     # -addr :8080 by default; omit -seed for random data
+curl 'localhost:8080/users?count=2'       # 1–50 users, default 3
+curl localhost:8080/users/7               # one user with "id": 7
+```
+
 ## Supported Schema
 
 | Keyword | Notes |
@@ -138,6 +148,8 @@ go vet ./...
 go test ./... -race
 ```
 
+Seeded output (the sample above and the `// Output:` blocks in `example_test.go`) is pinned per library version: when generation changes, run `go test . -run '^Example'` and paste the new `got:` values.
+
 ## Layout
 
 | Path | Responsibility |
@@ -146,6 +158,7 @@ go test ./... -race
 | `/parser` | JSON Schema → typed AST |
 | `/internal/numeric` | Range math shared by parser and generator |
 | `/generator` | AST walker and value generators |
+| `/examples/mockserver` | Runnable stub HTTP API built on the library |
 
 ## License
 

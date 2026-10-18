@@ -1,0 +1,27 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "User",
+  "type": "object",
+  "required": ["id", "username", "email", "role", "createdAt", "address"],
+  "properties": {
+    "id":        {"type": "integer", "minimum": 1},
+    "username":  {"type": "string", "pattern": "^[a-z][a-z0-9_]{3,11}$"},
+    "email":     {"type": "string", "format": "email"},
+    "role":      {"enum": ["admin", "editor", "viewer"]},
+    "nickname":  {"type": ["string", "null"], "minLength": 3, "maxLength": 12},
+    "createdAt": {"type": "string", "format": "date-time"},
+    "address":   {"$ref": "#/$defs/address"},
+    "tags":      {"type": "array", "maxItems": 3, "items": {"type": "string", "pattern": "^[a-z]{3,8}$"}}
+  },
+  "$defs": {
+    "address": {
+      "type": "object",
+      "required": ["street", "city", "zip"],
+      "properties": {
+        "street": {"type": "string", "pattern": "^[1-9][0-9]{0,3} [A-Z][a-z]{3,9} (St|Ave|Rd)$"},
+        "city":   {"type": "string", "pattern": "^[A-Z][a-z]{3,9}$"},
+        "zip":    {"type": "string", "pattern": "^\\d{5}$"}
+      }
+    }
+  }
+}
