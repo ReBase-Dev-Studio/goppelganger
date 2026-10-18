@@ -64,6 +64,8 @@ With seed `42`, the first `faker.Generate(schema)` call returns (as JSON):
 - `Compile` returns an immutable `*Schema`, safe to share across goroutines and Fakers. `Generate(b)` is exactly `Compile(b)` + `GenerateSchema`, so both give the same output for the same seed. `Compile` accepts any root; `GenerateSchema` reports `ErrRootMustBeObject`. A compiled schema is several times faster per call (`go test -bench Generate -benchmem`).
 - Results are plain Go values ready for `encoding/json`: `map[string]any`, `[]any`, `string`, `int64` (`integer`), `float64` (`number`), `bool`, `nil`.
 
+Runnable examples (recursive `$ref`, `Compile` reuse, error matching) live in [`example_test.go`](example_test.go) and on [pkg.go.dev](https://pkg.go.dev/github.com/ReBase-Dev-Studio/goppelganger#pkg-examples); `go test` verifies their seeded output.
+
 ## Supported Schema
 
 | Keyword | Notes |
@@ -137,6 +139,8 @@ go build ./...
 go vet ./...
 go test ./... -race
 ```
+
+Seeded output (the sample above and the `// Output:` blocks in `example_test.go`) is pinned per library version: when generation changes, run `go test . -run '^Example'` and paste the new `got:` values.
 
 ## Layout
 
