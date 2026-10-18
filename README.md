@@ -150,6 +150,8 @@ go test ./... -race
 
 Seeded output (the sample above and the `// Output:` blocks in `example_test.go`) is pinned per library version: when generation changes, run `go test . -run '^Example'` and paste the new `got:` values.
 
+Pull requests follow [`.github/pull_request_template.md`](.github/pull_request_template.md): conventional-commit type, stdlib-only/determinism checklist, and seeded-output changes flagged as breaking.
+
 ## Layout
 
 | Path | Responsibility |
