@@ -74,9 +74,9 @@ Runnable examples (recursive `$ref`, `Compile` reuse, error matching) live in [`
 [`examples/mockserver`](examples/mockserver/main.go) is a stub REST API that serves users generated from an embedded schema ([`schemas/user.json`](examples/mockserver/schemas/user.json)):
 
 ```sh
-go run ./examples/mockserver -seed 42     # -addr :8080 by default; omit -seed for random data
-curl 'localhost:8080/users?count=2'       # 1–50 users, default 3
-curl localhost:8080/users/7               # one user with "id": 7
+go run ./examples/mockserver -seed 42     # -addr :3000 by default; omit -seed for random data
+curl 'localhost:3000/users?count=2'       # 1–50 users, default 3
+curl localhost:3000/users/7               # one user with "id": 7
 ```
 
 ## Supported Schema
