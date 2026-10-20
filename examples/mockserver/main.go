@@ -2,8 +2,8 @@
 // JSON Schemas, so a client can be built before the real backend exists.
 //
 //	go run ./examples/mockserver -seed 42
-//	curl 'localhost:8080/users?count=2'
-//	curl localhost:8080/users/7
+//	curl 'localhost:3000/users?count=2'
+//	curl localhost:3000/users/7
 package main
 
 import (
@@ -30,7 +30,7 @@ var userJSON []byte
 var userSchema = goppelganger.MustCompile(userJSON)
 
 func main() {
-	addr := flag.String("addr", ":8080", "listen address")
+	addr := flag.String("addr", ":3000", "listen address")
 	var seed *int64
 	flag.Func("seed", "int64 seed for reproducible responses (default: random)", func(raw string) error {
 		parsed, err := strconv.ParseInt(raw, 10, 64)
